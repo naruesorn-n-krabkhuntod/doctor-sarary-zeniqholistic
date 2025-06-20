@@ -1,0 +1,735 @@
+<head>
+    <title>ระบบบันทึกเงินเดือนแพทย์</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Sarabun:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap');
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Sarabun", sans-serif;
+            font-weight: unset;
+        }
+        body {
+            background-color: #dfe8fc;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            main {
+                background-color: #fff;
+                width: 100%;
+                max-width: 1400px;
+                box-shadow: 0 0 15px 1px #e8e8e8;
+                border-radius: 16px;
+                padding: 24px;
+                min-height: 100%;
+                .header {
+                    width: 100%;
+                    display: flex;
+                    align-items: center;
+                    flex-wrap: nowrap;
+                    text-wrap: none;
+                    justify-content: space-between;
+                    .header-title {
+                        display: flex;
+                        align-items: center;
+                        gap: 16px;
+                        letter-spacing: 1px;
+                        img {
+                            height: 80px;
+                        }
+                    }
+                    .header-action {
+                        display: flex;
+                        align-items: center;
+                        gap: 16px;
+                        button {
+                            display: flex;
+                            align-items: center;
+                            height: 60px;
+                            padding: 0 16px;
+                            border: none;
+                            background-color: #3b1300;
+                            color: #fff;
+                            border-radius: 8px;
+                            font-size: 18px;
+                            gap: 8px;
+                            box-shadow: 0 0 8px 1px #eee;
+                            cursor: pointer;
+                            svg {
+                                    fill: #fff;
+                            }
+                        }
+                    }
+                }
+                .filter {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    margin-top: 32px;
+                    .filter-item {
+                        display: flex;
+                        align-items: center;
+                        gap: 8px;
+                        .filter-select {
+                            border: 1px solid #ccc;
+                            padding: 8px 16px;
+                            border-radius: 8px;
+                            display: flex;
+                            flex-wrap: nowrap;
+                            align-items: center;
+                            gap: 5px;
+                            position: relative;
+                            width: 220px;
+                            b {
+                                color: #000;
+                            }
+                            span {
+                                fill: #000a;
+                            }
+                            svg {
+                                position: absolute;
+                                top: 50%;
+                                right: 16px;
+                                translate: 0 -50%;
+                            }
+                            .filter-menu {
+                                position: absolute;
+                                top: calc(100% + 8px);
+                                left: 0;
+                                min-width: 100%;
+                                background-color: #fff;
+                                border: 1px solid #ccc;
+                                border-bottom: none;
+                                border-radius: 10px;
+                                p {
+                                    padding: 12px 0;
+                                    padding-left: 12px;
+                                    border-bottom: 1px solid #ccc;
+                                    cursor: pointer;
+                                    &:hover {
+                                        background-color: #eee;
+                                        color: #000;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                #payrollList {
+                    display: flex;
+                    width: 100%;
+                    flex-direction: column;
+                    gap: 8px;
+                    margin-top: 8px;
+                    .payroll-item {
+                        background-color: #f8f8f8;
+                        border-radius: 8px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                        padding: 16px;
+                        border: 1px solid #0000;
+                        p {
+                            font-size: 14px;
+                            &.name {
+                                font-size: 24px;
+                                color: #000;
+                                /* font-weight: bold; */
+                            }
+                        }
+                        &:hover{
+                            background-color: #f8f0ec;
+                            /* background-color: #ff8248; */
+                            /* border: 1px solid #3b1300; */
+                        }
+                        .payroll-action {
+                            display: flex;
+                            align-items: center;
+                            gap: 5px;
+                        }
+                        button {
+                            display: flex;
+                            align-items: center;
+                            height: 40px;
+                            padding: 0 16px;
+                            border: none;
+                            background-color: #3b1300;
+                            color: #fff;
+                            border-radius: 5px;
+                            font-size: 18px;
+                            gap: 8px;
+                            svg {
+                                fill: #fff;
+                            }
+                        }
+                    }
+                }
+                #document {
+                    margin-top: 20px;
+                    width: 210mm;
+                    padding: 2mm 17mm 17mm 17mm;
+                    height: 297mm;
+                    background-color: #fff;
+                    box-shadow: 0 0 20px 1px #ccc;
+                    color: #000;
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    translate: -50% -50%;
+                    p {
+                        color: #000;
+                    }
+                    .header {
+                        width: 100%;
+                        display: flex;
+                        justify-content: space-between;
+
+                        img {
+                            width: 34mm !important;
+                        }
+                        div {
+                            display: flex;
+                            flex-direction: column;
+                            align-items: start;
+                            p {
+                                font-size: 3mm;
+                                line-height: 1.5;
+                                font-weight: lighter;
+                            }
+                        }
+                    }
+                    .sub-header {
+                        width: 100%;
+                        margin-top: 10mm;
+                        p {
+                            width: 100%;
+                            text-align: center;
+                            font-size: 3.6mm;
+                            font-weight: lighter;
+                            line-height: 1.8;
+                            &.h1 {
+                                font-size: 5.8mm;
+                                text-decoration: underline;
+                                color: #f00;
+                                font-weight: normal;
+                            }
+                        }
+                    }
+                    .line {
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                        font-weight: lighter;
+                        &.m-top {
+                            margin-top: 9mm;
+                        }
+                        p {
+                            font-size: 3.6mm;
+                            line-height: 2.3;
+                            .w-100 {
+                                display: inline-block;
+                                width: 14mm !important;
+                            }
+                            b {
+                                font-weight: normal;
+                                /* color: #000; */
+                            }
+                        }
+                        
+                    }
+                    .license {
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: center;
+                        font-weight: lighter;
+                        margin-top: 20mm;
+                        color: #0008;
+                        .dot {
+                            font-size: 3mm;
+                        }
+                        p {
+                            font-size: 3.6mm;
+                            .w-100 {
+                                display: inline-block;
+                                width: 14mm !important;
+                            }
+                            b {
+                                font-weight: normal;
+                                color: #000;
+                            }
+                        }
+                    }
+                }
+                #add-slip {
+                    position: fixed;
+                    width: 800px;
+                    height: fit-content;
+                    top: 50%;
+                    left: 50%;
+                    translate: -50% -50%;
+                    background-color: #fff;
+                    border: 1px solid #ccc;
+                    box-shadow: 0 0 15px 1px #ccc;
+                    border-radius: 16px;
+                    padding: 16px;
+                    h2 {
+                        font-size: 24px;
+                        font-weight: bold;
+                        width: 100%;
+                        text-align: center;
+                    }
+                    p {
+                        font-size: 24px;
+                        font-weight: bold;
+                        margin-top: 15px;
+                        color: #000;
+                    }
+                    .row {
+                        display: flex;
+                        align-items: center;
+                        flex-wrap: nowrap;
+                        /* gap: 15px; */
+                        /* margin-bottom: 8px; */
+                        border: 1px solid #0003;
+                        input, select {
+                            width: 100%;
+                            height: 50px;
+                            font-size: 18px;
+                            padding-left: 15px; 
+                            border: none;
+                            color: #000;
+                            background-color: #0f05;
+                            &:focus {
+                                outline: unset;
+                            }
+                            &.number {
+                                text-align: end;
+                            }
+
+                        }
+                        select {
+                            background-color: #fff;
+                            border: 1px solid #000;
+                        }
+                        &.remove input {
+                            background-color: #f005;
+                        }
+                    }
+                    button {
+                        width: 100%;
+                        height: 40px;
+                        font-size: 18px;
+                        background-color: #fff;
+                        border: none;
+                        &.action {
+                            border: none;
+                            margin-top: 15px;
+                            border: 1px solid #000;
+                            background-color: #fff;
+                            border-radius: 8px;
+                            height: 50px;
+                            &.submit {
+                                background-color: #000;
+                                color: #fff;
+                            }
+                        }
+                    }
+                }
+
+                p {
+                    margin-top: -3px;
+                    font-size: 18px;
+                    color: #000a;
+                    line-height: 1.8;
+                }
+                .hide {
+                    display: none;
+                }
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main>
+        <!-- Head Title and Action button -->
+        <div class="header">
+            <div class="header-title">
+                <img src="/logo2.png">
+                <div class="header-title-item">
+                    <h1>Zeniq Holistic Payroll</h1>
+                    <p>จัดการข้อมูลรายได้และรายหักของแพทย์ Zeniq Holistic</p>
+                </div>
+            </div>
+            <div class="header-action">
+                <button class="empoyee">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M400-480q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47ZM80-160v-112q0-33 17-62t47-44q51-26 115-44t141-18h14q6 0 12 2-8 18-13.5 37.5T404-360h-4q-71 0-127.5 18T180-306q-9 5-14.5 14t-5.5 20v32h252q6 21 16 41.5t22 38.5H80Zm560 40-12-60q-12-5-22.5-10.5T584-204l-58 18-40-68 46-40q-2-14-2-26t2-26l-46-40 40-68 58 18q11-8 21.5-13.5T628-460l12-60h80l12 60q12 5 22.5 11t21.5 15l58-20 40 70-46 40q2 12 2 25t-2 25l46 40-40 68-58-18q-11 8-21.5 13.5T732-180l-12 60h-80Zm40-120q33 0 56.5-23.5T760-320q0-33-23.5-56.5T680-400q-33 0-56.5 23.5T600-320q0 33 23.5 56.5T680-240ZM400-560q33 0 56.5-23.5T480-640q0-33-23.5-56.5T400-720q-33 0-56.5 23.5T320-640q0 33 23.5 56.5T400-560Zm0-80Zm12 400Z"/></svg>
+                    รายชื่อแพทย์
+                </button>
+            </div>
+        </div>
+
+        <!-- Filter and title -->
+        <div class="filter">
+            <div class="filter-item">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M680-80v-120H560v-80h120v-120h80v120h120v80H760v120h-80Zm-480-80q-33 0-56.5-23.5T120-240v-480q0-33 23.5-56.5T200-800h40v-80h80v80h240v-80h80v80h40q33 0 56.5 23.5T760-720v244q-20-3-40-3t-40 3v-84H200v320h280q0 20 3 40t11 40H200Zm0-480h480v-80H200v80Zm0 0v-80 80Z"/></svg>
+                <p>ข้อมูลเงินเดือนแพทย์</p>
+            </div>
+            <div class="filter-item">
+                <div class="filter-select" onclick="toggleHide('month-menu')">
+                    <p id="month">เดือน: </p>
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M480-360 280-560h400L480-360Z"/></svg>
+                    <div class="filter-menu hide" id="month-menu">
+                        <p onclick="month = 0; updateMonthView(); loadPayroll()">มกราคม</p>
+                        <p onclick="month = 1; updateMonthView(); loadPayroll()">กุมภาพันธ์</p>
+                        <p onclick="month = 2; updateMonthView(); loadPayroll()">มีนาคม</p>
+                        <p onclick="month = 3; updateMonthView(); loadPayroll()">เมษายน</p>
+                        <p onclick="month = 4; updateMonthView(); loadPayroll()">พฤษภาคม</p>
+                        <p onclick="month = 5; updateMonthView(); loadPayroll()">มิถุนายน</p>
+                        <p onclick="month = 6; updateMonthView(); loadPayroll()">กรกฎาคม</p>
+                        <p onclick="month = 7; updateMonthView(); loadPayroll()">สิงหาคม</p>
+                        <p onclick="month = 8; updateMonthView(); loadPayroll()">กันยายน</p>
+                        <p onclick="month = 9; updateMonthView(); loadPayroll()">ตุลาคม</p>
+                        <p onclick="month = 10; updateMonthView(); loadPayroll()">พฤศจิกายน</p>
+                        <p onclick="month = 11; updateMonthView(); loadPayroll()">ธันวาคม</p>
+                    </div>
+                </div>
+                <div class="filter-select" onclick="toggleHide('year-menu')">
+                    <p id="year">ปี: </p>
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M480-360 280-560h400L480-360Z"/></svg>
+                    <div class="filter-menu hide" id="year-menu">
+                    </div>
+                </div>
+
+                <div class="filter-select" style="background-color: #000; width: fit-content;" onclick="showAddPayroll('year-menu')">
+                    <p style="color: #fff; text-align: center;">เพิ่มข้อมูล</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="payrollList"></div>
+
+        <div class="slip-pdf hide" id="document">
+            <div class="header">
+                <img src="/logo2.png" alt="">
+                <div>
+                    <p>บริษัท วัฒนณัฐ จำกัด / เซนิก โฮลิสติค คลินิก</p>
+                    <p>WATNNUT COMPANY LIMITED / ZENIQ HOLISTIC CLINIC</p>
+                    <p>อาคารแลนด์มาร์ค พลาซ่า ชั้น B 138 ถนนสุขุมวิท แขวงคลองเตย เขตคลองเตย กรุงเทพมหานคร 10110</p>
+                    <p>ใบแจ้งเงินเดือน</p>
+                </div>
+            </div>
+
+            <div class="sub-header">
+                <p class="h1">ลับเฉพาะ</p>
+                <p>เลขที่เอกสาร <span id="doc-id">NULL</span></p>
+                <p>ใบแจ้งค่าออกตรวจและหัตถการ</p>
+            </div>
+
+            <div class="line m-top">
+                <p><b><span class="w-100">ชื่อ-สกุล</span>:</b> <span id="doc-name">NULL</span></p>
+                <p><b>รหัสพนักงาน <span id="doc-uid">NULL</span></b></p>
+            </div>
+            <div class="line">
+                <p><b><span class="w-100">เดือน</span>:</b> <span id="doc-month">NULL</span></p>
+            </div>
+            <div class="line">
+                <p><b>เข้าบัญชีเลขที่ :</b> <span id="doc-no">NULL</span> <span id="doc-bank">NULL</span></p>
+            </div>
+
+
+            <div class="line m-top" ><p><b>รายได้ประจำเดือน :</b></p></div>
+            <div id="doc-add"></div>
+
+            <div class="line m-top" ><p><b>รายหักประจำเดือน :</b></p></div>
+            <div id="doc-rm"></div>
+
+            <div class="line m-top" >
+                <p><b>รายได้สุทธิเข้าบัญชี</b></p>
+                <p><b><span id="doc-sum">NULL</span> บาท</b></p>
+            </div>
+
+            <div class="license">
+                <p class="dot">...........................................................................................</p>
+                <p id="license-name"></p>
+                <p id="license-title"></p>
+            </div>
+        </div>
+
+
+        <!-- Add SLIP -->
+        <div class="hide" id="add-slip">
+            <h2 id="add-slip-title">เพิ่มข้อมูล</h2>
+            <form id="add-form">
+                <p>รหัสพนักงาน:</p>
+                <div class="row">
+                    <select id="empoyee-sel"></select>
+                </div>
+                <p>รายได้ประจำเดือน:</p>
+                <div id="add-input"></div>
+                <button class="add-row" type="button" onclick="addRow('add-input')">เพิ่มแถว</button>
+
+                <p>รายหักประจำเดือน:</p>
+                <div id="rm-input"></div>
+                <button class="add-row" type="button" onclick="addRow('rm-input')">เพิ่มแถว</button>
+
+                <p>ผู้อนุมัติ:</p>
+                <div class="row">
+                    <select id="approver-sel"></select>
+                </div>
+
+                <div class="row" style="gap: 8px; border: none;"  id="payroll-action">
+                    <!-- <button class="cancel action" type="button" onclick="showAddPayroll(); document.getElementById('add-slip').classList.add('hide')">ยกเลิก</button>
+                    <button class="submit action" type="button" onclick="addPayroll(1); document.getElementById('add-slip').classList.add('hide')">บันทึก</button>
+                    <button class="submit action" type="button" onclick="addPayroll(0); document.getElementById('add-slip').classList.add('hide')">อัพเดต</button> -->
+                </div>
+
+                
+            </form>
+        </div>
+    </main>
+
+
+    <script>
+        const now = new Date(Date.now());
+        const thaiMonths = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+        let month = now.getMonth()
+        let year = now.getFullYear()
+        
+
+        function updateMonthView(){ document.getElementById('month').innerHTML = `<b>เดือน:</b> ${thaiMonths[month]}`;}
+        function updateYearView(){ document.getElementById('year').innerHTML = `<b>ปี:</b> ${year}`; }
+        function toggleHide(id){ document.getElementById(id).classList.toggle('hide'); }
+
+        function getYearList(){
+            var yearElement = ''
+            for(var index = 2024; index <= now.getFullYear(); index++) yearElement += `<p onclick="year = ${index}; updateYearView(); loadPayroll()">${index}</p>`
+            document.getElementById('year-menu').innerHTML = yearElement
+        }
+
+        async function loadPayroll() {
+            const res = await fetch(`/api/payroll?year=${year}&month=${month}`);
+            const payrolls = await res.json();
+            const list = document.getElementById('payrollList');
+            list.innerHTML = '';
+            payrolls.forEach(payroll => {
+                const div = document.createElement('div');
+                div.innerHTML = `
+                <div class="payroll-item">
+                    <div class="payroll-data">
+                        <p class="name">${payroll.empoyee_name}</p>
+                        <p>รหัสพนักงาน: 24000023, เลขที่เอกสาร: HR202503-0023</p>
+                    </div>
+                    <div class="payroll-action">
+                        <button onclick="exportToPDF(1,'${payroll.id}')"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M480-320 280-520l56-58 104 104v-326h80v326l104-104 56 58-200 200ZM240-160q-33 0-56.5-23.5T160-240v-120h80v120h480v-120h80v120q0 33-23.5 56.5T720-160H240Z"/></svg></button>
+                        <button onclick="exportToPDF(0,'${payroll.id}')"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M640-640v-120H320v120h-80v-200h480v200h-80Zm-480 80h640-640Zm560 100q17 0 28.5-11.5T760-500q0-17-11.5-28.5T720-540q-17 0-28.5 11.5T680-500q0 17 11.5 28.5T720-460Zm-80 260v-160H320v160h320Zm80 80H240v-160H80v-240q0-51 35-85.5t85-34.5h560q51 0 85.5 34.5T880-520v240H720v160Zm80-240v-160q0-17-11.5-28.5T760-560H200q-17 0-28.5 11.5T160-520v160h80v-80h480v80h80Z"/></svg></button>
+                        <button onclick="showEditPayroll('${payroll.id}')"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M200-200h57l391-391-57-57-391 391v57Zm-80 80v-170l528-527q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L290-120H120Zm640-584-56-56 56 56Zm-141 85-28-29 57 57-29-28Z"/></svg></button>
+                    </div>
+                </div>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        async function loadEmpoyee() {
+            const res = await (await fetch(`/api/allempoyee`)).json();
+            res.forEach((empoyee)=>{
+                const lis = document.createElement('option');
+                lis.value = `${empoyee.empoyee_id}`
+                lis.innerHTML = `${empoyee.empoyee_id} : ${empoyee.empoyee_name}`;
+                document.getElementById('empoyee-sel').appendChild(lis)
+            })
+        }
+
+        async function loadApprover() {
+            const res = await (await fetch(`/api/allapprover`)).json();
+            res.forEach((empoyee)=>{
+                const lis = document.createElement('option');
+                lis.value = `${empoyee.ap_id}`
+                lis.innerHTML = `${empoyee.ap_name} : ${empoyee.ap_title}`;
+                document.getElementById('approver-sel').appendChild(lis)
+            })
+        }
+
+
+        async function exportToPDF(mode, id) {
+            document.getElementById('document').classList.remove('hide');
+            const res = await fetch(`/api/payrollid?id=${id}`);
+            const payroll = await res.json();
+            document.getElementById('doc-id').innerHTML = payroll[0].id;
+            document.getElementById('doc-name').innerHTML = payroll[0].empoyee_name;
+            document.getElementById('doc-uid').innerHTML = payroll[0].empoyee_id;
+            document.getElementById('doc-month').innerHTML = `${thaiMonths[payroll[0].month]} ${year + 543}`;
+            document.getElementById('doc-no').innerHTML = payroll[0].empoyee_no;
+            document.getElementById('doc-bank').innerHTML = payroll[0].empoyee_bank;
+            
+            let sumPayroll = 0;
+            const title = payroll[0].title.split(',');
+            const data = payroll[0].data.split(',')
+            document.getElementById('doc-add').innerHTML = '';
+            for(let index=0; index < title.length; index++){
+                if(data[index] && data[index] != 0){
+                    let lis = document.createElement('div');
+                    lis.classList.add('line');
+                    lis.innerHTML = `<p>${title[index]}</p><p>${Number(data[index]).toLocaleString('en-US', { minimumIntegerDigits: 2, minimumFractionDigits: 2,})    } บาท</p>`;
+                    document.getElementById('doc-add').appendChild(lis); 
+                    sumPayroll += Number(data[index])
+                    console.log(sumPayroll)
+                }
+            }
+            const titleRm = payroll[0].title_rm.split(',')
+            const dataRm = payroll[0].data_rm.split(',')
+            document.getElementById('doc-rm').innerHTML = '';
+            for(let index=0; index < titleRm.length; index++){
+                if(dataRm[index] && dataRm[index] != 0){
+                    let lis = document.createElement('div');
+                    lis.classList.add('line');
+                    lis.innerHTML = `<p>${titleRm[index]}</p><p>${Number(dataRm[index]).toLocaleString('en-US', { minimumIntegerDigits: 2, minimumFractionDigits: 2,})} บาท</p>`;
+                    document.getElementById('doc-rm').appendChild(lis); 
+                    sumPayroll -= Number(dataRm[index])
+                }
+            }
+            document.getElementById('doc-sum').innerHTML = sumPayroll.toLocaleString('en-US', { minimumIntegerDigits: 2, minimumFractionDigits: 2,});
+            document.getElementById('license-name').innerHTML = `(${payroll[0].ap_name})`
+            document.getElementById('license-title').innerHTML = payroll[0].ap_title
+
+            const element = document.getElementById('document');
+            const canvas = await html2canvas(element, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            const imgWidth = 210;
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+            const imgData = canvas.toDataURL('image/png');
+            
+            document.getElementById('document').classList.add('hide');
+            pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+            if(mode == 0){
+                const blobURL = pdf.output('bloburl');
+                const printWindow = window.open(blobURL, '_blank');
+                printWindow.onload = () => {
+                    printWindow.focus();
+                    printWindow.print();
+                };
+            }
+            else pdf.save('ใบแจ้งเงินเดือน.pdf');
+        }
+
+        function showAddPayroll(){
+            document.getElementById('add-slip-title').innerHTML =  `เพิ่มข้อมูล ${thaiMonths[month]} ${year}`;
+            document.getElementById('add-slip').classList.remove('hide');
+            let addTitle = ['ค่าออกตรวจ OPD', 'ค่าหัตถการ', 'ค่าใบประกอบวิชาชีพ', 'ค่า Incentive'] 
+            let rmTitle = ['ค่าบริการทางคลินิก(upfront 10%)']
+
+            document.getElementById('add-input').innerHTML = ''
+            for(let index=0; index<addTitle.length; index++){
+                let lis = document.createElement('div');
+                lis.classList.add('row');
+                lis.innerHTML = `
+                    <input type="text" value="${addTitle[index]}" disabled>
+                    <input type="number" class="number" value="0">`
+                document.getElementById('add-input').appendChild(lis);
+            }
+
+            document.getElementById('rm-input').innerHTML = ''
+            for(let index=0; index<rmTitle.length; index++){
+                let lis = document.createElement('div');
+                lis.classList.add('row');
+                lis.classList.add('remove');
+                lis.innerHTML = `
+                    <input type="text" value="${rmTitle[index]}" disabled>
+                    <input type="number" class="number" value="0">`
+                document.getElementById('rm-input').appendChild(lis);
+            }
+            document.getElementById('payroll-action').innerHTML =  `
+                    <button class="cancel action" type="button" onclick="showAddPayroll(); document.getElementById('add-slip').classList.add('hide')">ยกเลิก</button>
+                    <button class="submit action" type="button" onclick="addPayroll(1); document.getElementById('add-slip').classList.add('hide')">บันทึก</button>
+            `;
+        }
+        
+        async function showEditPayroll(id){
+            const res = await (await fetch(`/api/payrollid?id=${id}`)).json()
+            const data = res[0]
+            document.getElementById('add-slip-title').innerHTML = `แก้ไขข้อมูล ${thaiMonths[data.month]} ${data.year}`;
+            document.getElementById('add-slip').classList.remove('hide');
+            let addTitle = data.title.split(',')
+            let rmTitle = data.title_rm.split(',')
+
+            document.getElementById('add-input').innerHTML = ''
+            for(let index=0; index<addTitle.length; index++){
+                let lis = document.createElement('div');
+                lis.classList.add('row');
+                lis.innerHTML = `
+                    <input type="text" value="${addTitle[index]}" disabled>
+                    <input type="number" class="number" value="${Number(data.data.split(',')[index])}">`
+                document.getElementById('add-input').appendChild(lis);
+            }
+
+            document.getElementById('rm-input').innerHTML = ''
+            for(let index=0; index<rmTitle.length; index++){
+                let lis = document.createElement('div');
+                lis.classList.add('row');
+                lis.classList.add('remove');
+                lis.innerHTML = `
+                    <input type="text" value="${rmTitle[index]}" disabled>
+                    <input type="number" class="number" value="${Number(data.data_rm.split(',')[index])}">`
+                document.getElementById('rm-input').appendChild(lis);
+            }
+
+            document.getElementById('empoyee-sel').value = data.empoyee_id
+            document.getElementById('approver-sel').value = data.approver
+            document.getElementById('payroll-action').innerHTML =  `
+                    <button class="cancel action" type="button" onclick="showAddPayroll(); document.getElementById('add-slip').classList.add('hide')">ยกเลิก</button>
+                    <button class="submit action" type="button" onclick="addPayroll(0); document.getElementById('add-slip').classList.add('hide')">อัพเดต</button>
+            `;
+        }
+        
+        function addRow(id){
+            let lis = document.createElement('div');
+            lis.classList.add('row');
+            if(id == 'rm-input') lis.classList.add('remove');
+            lis.innerHTML = `
+                <input type="text" value="ค่า">
+                <input type="number" class="number" value="0">`
+            document.getElementById(id).appendChild(lis);
+        }
+
+        async function addPayroll(mode) {
+            const addSlip = document.getElementById('add-input');
+            const textInputs = addSlip.querySelectorAll('input[type="text"]');
+            const title = Array.from(textInputs).map(input => input.value.trim()).join(', ');
+            const numInputs = addSlip.querySelectorAll('input[type="number"]');
+            const data = Array.from(numInputs).map(input => input.value.trim()).join(', ');
+            const remSlip = document.getElementById('rm-input');
+            const remTextInputs = remSlip.querySelectorAll('input[type="text"]');
+            const remTitle = Array.from(remTextInputs).map(input => input.value.trim()).join(', ');
+            const remNumInputs = remSlip.querySelectorAll('input[type="number"]');
+            const remData = Array.from(remNumInputs).map(input => input.value.trim()).join(', ');
+            const empoyee_id = document.getElementById('empoyee-sel').value
+            const id = `HR${(year*100)+month+1}-${(empoyee_id % 10000).toString().padStart(4, '0')}`;
+            const approver = document.getElementById('approver-sel').value
+            const idTest = await (await fetch(`/api/payrollid?id=${id}`)).json()
+            if(mode == 0) await fetch(`/api/updatepayroll?id=${id}&month=${month}&year=${year}&empoyee_id=${empoyee_id}&title=${title}&data=${data}&title_rm=${remTitle}&data_rm=${remData}&approver=${approver}`);
+            else if(idTest.length >0) {
+                alert("ข้อมูลซ้ำ");
+                return;
+            }
+            else await fetch(`/api/addpayroll?id=${id}&month=${month}&year=${year}&empoyee_id=${empoyee_id}&title=${title}&data=${data}&title_rm=${remTitle}&data_rm=${remData}&approver=${approver}`);
+            alert("บันทึกข้อมูลเสร็จสิ้น")
+            loadPayroll()
+
+        }
+
+        // Oninit
+        getYearList()
+        updateMonthView()
+        updateYearView()
+        loadPayroll()
+        loadEmpoyee()
+        loadApprover()
+    </script>
+</body>
